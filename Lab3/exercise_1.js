@@ -56,7 +56,7 @@ function TaskList() {
 }
 
 const addToHtml = (taskList) => {
-    let ul= '<ul class="list-group list-group-flush" id="tasklist"></ul>';
+    let ul = '<ul class="list-group list-group-flush" id="tasklist"></ul>';
     //let b = document.querySelector('main h1');
     //b.insertAdjacentElement("afterbegin", ul);
     let ul_init = document.querySelector('main h1');
@@ -94,7 +94,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const aside = document.querySelector('aside div');
     aside.addEventListener('click', (event) => {
         event.preventDefault();
-        event.target.classList.remove("active");
+        document.querySelectorAll('aside div a').forEach((element) => {
+            element.classList.remove("active");
+        });
+        event.target.classList.toggle("active");
         let h1 = event.target.innerText;
         let main = document.querySelector('main');
         let taskhtml = createTaskList();
@@ -118,7 +121,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 break;
             case 'Private':
                 h1 = '<h1>Private</h1>';
-                filterhtml =taskhtml.filterPrivate();
+                filterhtml = taskhtml.filterPrivate();
                 break;
             default:
                 h1 = '<h1>Donne nude.</h1>';
@@ -126,6 +129,5 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
         main.innerHTML = h1;
         addToHtml(filterhtml);
-        event.target.classList.toggle('active');
     });
 });
