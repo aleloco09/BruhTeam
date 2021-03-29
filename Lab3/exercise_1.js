@@ -42,23 +42,32 @@ function TaskList() {
         console.log(this.taskl);
     }
 
-    this.filterAndPrint = () => {
-        console.log(this.taskl.filter(function (a) {
+    this.filterImportant = () => {
+        return (this.taskl.filter(function (a) {
             return a.urgent;
         }));
+    }
+    this.filterPrivate = () => {
+        return (this.taskl.filter(function (a) {
+            return a.private;
+        }));
+
     }
 }
 
 const addToHtml = (taskList) => {
-    let tl_all = document.getElementById('tasklist-all');
-
-    let temp = '<li class="list-group-item"><div class="d-flex w-100 justify-content-between"><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="check-t1"> <label class="custom-control-label" id="taskName" for="check-t1"> </label></div><small id="taskDate"></small></div></li>';
+    let ul= '<ul class="list-group list-group-flush" id="tasklist"></ul>';
+    //let b = document.querySelector('main h1');
+    //b.insertAdjacentElement("afterbegin", ul);
+    let ul_init = document.querySelector('main h1');
+    let list = '<li class="list-group-item"><div class="d-flex w-100 justify-content-between"><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="check-t1"> <label class="custom-control-label" id="taskName" for="check-t1"> </label></div><small id="taskDate"></small></div></li>';
     let icon = '<svg class="bi bi-person-square" width="1.2em" height="1.2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14 1H2a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V2a1 1 0 00-1-1zM2 0a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V2a2 2 0 00-2-2H2z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M2 15v-1c0-1 1-4 6-4s6 3 6 4v1H2zm6-6a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>';
+    ul_init.insertAdjacentHTML("afterend", ul);
+    let tl = document.querySelector('main ul');
     for (let i = 0; i < taskList.length; i++) {
-        tl_all.insertAdjacentHTML("beforeend", temp);
+        tl.insertAdjacentHTML("beforeend", list);
         //let cosa=document.querySelectorAll('[id=taskName]');
         //.insertAdjacentText("afterbegin",''+taskList[i].description);
-
         document.querySelectorAll('[id=taskName]')[i].insertAdjacentText("afterbegin", '' + taskList[i].description);
         document.querySelectorAll('[id=taskDate]')[i].insertAdjacentText("afterbegin", '' + taskList[i].deadline);
         if (!taskList[i].private) {
@@ -67,49 +76,56 @@ const addToHtml = (taskList) => {
     }
 }
 
+function createTaskList() {
+    let createTask = new TaskList;
+    createTask.add(new Task(1, "laundry"));
+    createTask.add(new Task(2, "monday lab", "March 16, 2021 10:00 AM"));
+    createTask.add(new Task(3, "phone call", "March 8, 2021 4:20 PM"));
+
+    createTask.taskl[1].private = false;
+    createTask.taskl[2].urgent = true;
+    createTask.taskl[2].private = false;
+    return createTask;
+}
+// addToHtml(createTask.taskl);
+// createTask.filterAndPrint();
+
 document.addEventListener('DOMContentLoaded', (event) => {
     const aside = document.querySelector('aside div');
     aside.addEventListener('click', (event) => {
         event.preventDefault();
+        event.target.classList.remove("active");
+        let h1 = event.target.innerText;
         let main = document.querySelector('main');
-        switch (event.which) {
+        let taskhtml = createTaskList();
+        let filterhtml;
+        switch (h1) {
             case 'All':
-                let h1 = '<h1>All</h1>';
-                main.insertAdjacentHTML("afterbegin", h1);
+                h1 = '<h1>All</h1>';
+                filterhtml = taskhtml.taskl;
                 break;
             case 'Important':
-                let h1 = '<h1>Important</h1>';
-                main.insertAdjacentHTML("afterbegin", h1);
+                h1 = '<h1>Important</h1>';
+                filterhtml = taskhtml.filterImportant();
                 break;
             case 'Today':
-                let h1 = '<h1>Today</h1>';
-                main.insertAdjacentHTML("afterbegin", h1);
+                h1 = '<h1>Today</h1>';
+                //filterhtml = taskhtml.filterToday();
                 break;
             case 'Next 7 Days':
-                let h1 = '<h1>Next 7 Days</h1>';
-                main.insertAdjacentHTML("afterbegin", h1);
+                h1 = '<h1>Next 7 Days</h1>';
+                //filterhtml = taskhtml.filterN7D();
                 break;
             case 'Private':
-                let h1 = '<h1>Private</h1>';
-                main.insertAdjacentHTML("afterbegin", h1);
+                h1 = '<h1>Private</h1>';
+                filterhtml =taskhtml.filterPrivate();
                 break;
             default:
+                h1 = '<h1>Donne nude.</h1>';
                 break;
         }
-        pageTitle.classList.toggle('bg-primary');
+        main.innerHTML = h1;
+        addToHtml(filterhtml);
+        event.target.classList.toggle('active');
     });
 });
-
-let createTask = new TaskList;
-createTask.add(new Task(1, "laundry"));
-createTask.add(new Task(2, "monday lab", "March 16, 2021 10:00 AM"));
-createTask.add(new Task(3, "phone call", "March 8, 2021 4:20 PM"));
-
-createTask.taskl[1].private = false;
-createTask.taskl[2].urgent = true;
-createTask.taskl[2].private = false;
-
-// addToHtml(createTask.taskl);
-
-createTask.sortAndPrint();
-// createTask.filterAndPrint();
